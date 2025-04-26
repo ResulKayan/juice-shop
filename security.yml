@@ -1,0 +1,29 @@
+name: Juice Shop SYFT Analysis
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  syft-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v2
+
+    - name: Pull Juice Shop Docker image
+      run: docker pull bkimminich/juice-shop
+
+    - name: Install SYFT
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+    - name: Analyze Juice Shop image with SYFT
+      run: syft bkimminich/juice-shop
+
