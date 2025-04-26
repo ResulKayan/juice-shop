@@ -1,13 +1,13 @@
-name: Juice Shop Security Workflow
+name: Juice Shop SYFT Analysis
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
 
 jobs:
-  security-scan:
+  syft-scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,21 +20,10 @@ jobs:
     - name: Pull Juice Shop Docker image
       run: docker pull bkimminich/juice-shop
 
-    - name: Run Juice Shop container
-      run: docker run -d -p 3000:3000 bkimminich/juice-shop
-
-    - name: Wait for Juice Shop to start
-      run: sleep 15
-
-    - name: Verify Juice Shop is running
-      run: curl -I http://localhost:3000
-
-    - name: Install Trivy
+    - name: Install SYFT
       run: |
-        sudo apt-get update
-        sudo apt-get install wget -y
-        wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.0_Linux-64bit.deb
-        sudo dpkg -i trivy_0.50.0_Linux-64bit.deb
+        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
 
-    - name: Scan Docker image with Trivy
-      run: trivy image bkimminich/juice-shop
+    - name: Analyze Juice Shop image with SYFT
+      run: syft bkimminich/juice-shop
+
