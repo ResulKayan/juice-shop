@@ -3,7 +3,7 @@ name: Juice Shop SYFT Analysis
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
 
 jobs:
@@ -26,4 +26,6 @@ jobs:
 
     - name: Analyze Juice Shop image with SYFT
       run: syft bkimminich/juice-shop
-
+      
+    - name: Save SBOM to file
+      run: syft bkimminich/juice-shop -o json > sbom.json
